@@ -1,3 +1,4 @@
+# res://scripts/game_manager.gd
 extends Node
 
 # ══════════════════════════════════════

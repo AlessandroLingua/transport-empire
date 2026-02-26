@@ -14,6 +14,10 @@ config/name="Transport Empire"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+GameManager="*uid://d3r53wxwe78w6"
+
 [display]
 
 window/size/viewport_width=1920

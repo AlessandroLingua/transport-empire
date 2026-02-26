@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://5fxeb06yc3kt"]
+
+[ext_resource type="Script" uid="uid://dc3e3dno5r6a6" path="res://scripts/main.gd" id="1_o5qli"]
+
+[node name="Main" type="Control" unique_id=1618092038]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_o5qli")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1055225663]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1010894824]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TopBar" type="PanelContainer" parent="VBoxContainer" unique_id=661352439]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/TopBar" unique_id=51212911]
+layout_mode = 2
+
+[node name="CashLabel" type="Label" parent="VBoxContainer/TopBar/HBoxContainer" unique_id=985844427]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="VBoxContainer/TopBar/HBoxContainer" unique_id=630372121]
+layout_mode = 2
+
+[node name="CompanyLabel" type="Label" parent="VBoxContainer/TopBar/HBoxContainer" unique_id=552863971]
+layout_mode = 2
+
+[node name="Spacer2" type="Control" parent="VBoxContainer/TopBar/HBoxContainer" unique_id=1987260437]
+layout_mode = 2
+
+[node name="Level1Label" type="Label" parent="VBoxContainer/TopBar/HBoxContainer" unique_id=221305165]
+layout_mode = 2
+
+[node name="ScreenContainer" type="MarginContainer" parent="VBoxContainer" unique_id=630322716]
+layout_mode = 2
+
+[node name="Content" type="Control" parent="VBoxContainer/ScreenContainer" unique_id=1723824161]
+layout_mode = 2
+
+[node name="NavBar" type="PanelContainer" parent="VBoxContainer" unique_id=347792010]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/NavBar" unique_id=1029313436]
+layout_mode = 2
+
+[node name="BtnHQ" type="Button" parent="VBoxContainer/NavBar/HBoxContainer" unique_id=2116788049]
+layout_mode = 2
+
+[node name="BtnGarage" type="Button" parent="VBoxContainer/NavBar/HBoxContainer" unique_id=862344483]
+layout_mode = 2
+
+[node name="BtnLogistics" type="Button" parent="VBoxContainer/NavBar/HBoxContainer" unique_id=2034010876]
+layout_mode = 2
