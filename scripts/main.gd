@@ -1,15 +1,16 @@
 # res://scripts/main.gd
 extends Control
 
-@onready var cash_label = $VBoxContainer/TopBar/HBoxContainer/CashLabel
-@onready var company_label = $VBoxContainer/TopBar/HBoxContainer/CompanyLabel
-@onready var level_label = $VBoxContainer/TopBar/HBoxContainer/LevelLabel
-@onready var content = $VBoxContainer/ScreenContainer/Content
-@onready var btn_hq = $VBoxContainer/NavBar/HBoxContainer/BtnHQ
-@onready var btn_garage = $VBoxContainer/NavBar/HBoxContainer/BtnGarage
-@onready var btn_logistics = $VBoxContainer/NavBar/HBoxContainer/BtnLogistics
+# Riferimenti UI (creati da codice, non dalla scena)
+var cash_label: Label
+var company_label: Label
+var level_label: Label
+var content: Control
+var btn_hq: Button
+var btn_garage: Button
+var btn_logistics: Button
 
-# Scene da caricare per ogni schermata
+# Scene schermate
 var hq_scene = preload("res://scenes/screens/hq_screen.tscn")
 var garage_scene = preload("res://scenes/screens/garage_screen.tscn")
 var logistics_scene = preload("res://scenes/screens/logistics_screen.tscn")
@@ -18,8 +19,7 @@ var current_screen = null
 var current_button = null
 
 func _ready():
-	# Colori e stile
-	setup_theme()
+	build_ui()
 	
 	# Collega segnali bottoni
 	btn_hq.pressed.connect(_on_btn_hq_pressed)
@@ -36,18 +36,22 @@ func _ready():
 	# Carica schermata iniziale
 	switch_screen(hq_scene, btn_hq)
 
-func setup_theme():
-	# Sfondo scuro
-	var bg = $ColorRect
+func build_ui():
+	# ── Sfondo scuro ──
+	var bg = ColorRect.new()
 	bg.color = Color("#0d1117")
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(bg)
 	
-	# Layout
-	var vbox = $VBoxContainer
+	# ── Layout verticale principale ──
+	var vbox = VBoxContainer.new()
 	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(vbox)
 	
-	# Stile TopBar
-	var top_bar = $VBoxContainer/TopBar
+	# ══════════════════════════════
+	# TOP BAR
+	# ══════════════════════════════
+	var top_bar = PanelContainer.new()
 	var top_style = StyleBoxFlat.new()
 	top_style.bg_color = Color("#161b22")
 	top_style.border_color = Color("#30363d")
@@ -57,9 +61,58 @@ func setup_theme():
 	top_style.content_margin_top = 10
 	top_style.content_margin_bottom = 10
 	top_bar.add_theme_stylebox_override("panel", top_style)
+	vbox.add_child(top_bar)
 	
-	# Stile NavBar
-	var nav_bar = $VBoxContainer/NavBar
+	var top_hbox = HBoxContainer.new()
+	top_bar.add_child(top_hbox)
+	
+	# Cash
+	cash_label = Label.new()
+	cash_label.add_theme_color_override("font_color", Color("#2ea043"))
+	cash_label.add_theme_font_size_override("font_size", 18)
+	top_hbox.add_child(cash_label)
+	
+	# Spacer sinistro
+	var spacer1 = Control.new()
+	spacer1.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top_hbox.add_child(spacer1)
+	
+	# Nome azienda
+	company_label = Label.new()
+	company_label.add_theme_color_override("font_color", Color("#e6edf3"))
+	company_label.add_theme_font_size_override("font_size", 16)
+	top_hbox.add_child(company_label)
+	
+	# Spacer destro
+	var spacer2 = Control.new()
+	spacer2.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top_hbox.add_child(spacer2)
+	
+	# Livello CEO
+	level_label = Label.new()
+	level_label.add_theme_color_override("font_color", Color("#58a6ff"))
+	level_label.add_theme_font_size_override("font_size", 14)
+	top_hbox.add_child(level_label)
+	
+	# ══════════════════════════════
+	# AREA CONTENUTO (schermate)
+	# ══════════════════════════════
+	var screen_container = MarginContainer.new()
+	screen_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	screen_container.add_theme_constant_override("margin_left", 0)
+	screen_container.add_theme_constant_override("margin_right", 0)
+	screen_container.add_theme_constant_override("margin_top", 0)
+	screen_container.add_theme_constant_override("margin_bottom", 0)
+	vbox.add_child(screen_container)
+	
+	content = Control.new()
+	content.set_anchors_preset(Control.PRESET_FULL_RECT)
+	screen_container.add_child(content)
+	
+	# ══════════════════════════════
+	# NAV BAR
+	# ══════════════════════════════
+	var nav_bar = PanelContainer.new()
 	var nav_style = StyleBoxFlat.new()
 	nav_style.bg_color = Color("#161b22")
 	nav_style.border_color = Color("#30363d")
@@ -69,39 +122,45 @@ func setup_theme():
 	nav_style.content_margin_top = 8
 	nav_style.content_margin_bottom = 8
 	nav_bar.add_theme_stylebox_override("panel", nav_style)
+	vbox.add_child(nav_bar)
 	
-	# Label styling
-	cash_label.add_theme_color_override("font_color", Color("#2ea043"))
-	cash_label.add_theme_font_size_override("font_size", 18)
-	company_label.add_theme_color_override("font_color", Color("#e6edf3"))
-	company_label.add_theme_font_size_override("font_size", 16)
-	level_label.add_theme_color_override("font_color", Color("#58a6ff"))
-	level_label.add_theme_font_size_override("font_size", 14)
+	var nav_hbox = HBoxContainer.new()
+	nav_hbox.add_theme_constant_override("separation", 8)
+	nav_bar.add_child(nav_hbox)
 	
-	# Spacer
-	$VBoxContainer/TopBar/HBoxContainer/Spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	$VBoxContainer/TopBar/HBoxContainer/Spacer2.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# Bottoni navigazione
+	btn_hq = _create_nav_button("🏢 Sede")
+	nav_hbox.add_child(btn_hq)
 	
-	# ScreenContainer espandibile
-	$VBoxContainer/ScreenContainer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	btn_garage = _create_nav_button("🚛 Garage")
+	nav_hbox.add_child(btn_garage)
 	
-	# Stile bottoni NavBar
-	for btn in [btn_hq, btn_garage, btn_logistics]:
-		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn.add_theme_font_size_override("font_size", 14)
-		var btn_style = StyleBoxFlat.new()
-		btn_style.bg_color = Color("#21262d")
-		btn_style.border_color = Color("#30363d")
-		btn_style.set_border_width_all(1)
-		btn_style.set_corner_radius_all(8)
-		btn_style.content_margin_top = 10
-		btn_style.content_margin_bottom = 10
-		btn.add_theme_stylebox_override("normal", btn_style)
-		btn.add_theme_color_override("font_color", Color("#8b949e"))
-	
-	btn_hq.text = "🏢 Sede"
-	btn_garage.text = "🚛 Garage"
-	btn_logistics.text = "🗺️ Logistica"
+	btn_logistics = _create_nav_button("🗺️ Logistica")
+	nav_hbox.add_child(btn_logistics)
+
+func _create_nav_button(text: String) -> Button:
+	var btn = Button.new()
+	btn.text = text
+	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn.add_theme_font_size_override("font_size", 14)
+	btn.add_theme_color_override("font_color", Color("#8b949e"))
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color("#21262d")
+	style.border_color = Color("#30363d")
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(8)
+	style.content_margin_top = 10
+	style.content_margin_bottom = 10
+	btn.add_theme_stylebox_override("normal", style)
+	# Stile hover
+	var hover = style.duplicate()
+	hover.bg_color = Color("#30363d")
+	btn.add_theme_stylebox_override("hover", hover)
+	# Stile pressed
+	var pressed = style.duplicate()
+	pressed.bg_color = Color("#1c2333")
+	btn.add_theme_stylebox_override("pressed", pressed)
+	return btn
 
 func update_top_bar():
 	cash_label.text = "💰 $" + format_number(GameManager.cash)
