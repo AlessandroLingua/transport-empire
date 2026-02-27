@@ -1,122 +1,76 @@
-# res://scripts/game_manager.gd
+# res://scripts/managers/game_manager.gd
 extends Node
 
-# DATI AZIENDA
+# ── AZIENDA ──
 var company_name: String = "TransLogic"
-var company_city: String = "Turin"
-var company_country: String = "IT"
 var cash: int = 500000
 var ceo_level: int = 1
 var ceo_xp: int = 0
 var reputation: float = 50.0
 
-
-# FLOTTA
+# ── FLOTTA ──
 var owned_vehicles: Array = []
 var max_vehicles: int = 5
 
+# ── TERMINALI ──
+var owned_terminals: Array = []
+var MAX_DELIVERY_DISTANCE_KM: int = 350
 
-# CATALOGO VEICOLI (dati di gioco)
+# ── Catalogo terminali ──
+var terminal_catalog: Array = [
+	{"id": "torino",     "city": "Torino",      "country": "IT", "lon": 7.68,  "lat": 45.07, "price": 0,       "capacity": 5,  "unlock_level": 1},
+	{"id": "milano",     "city": "Milano",      "country": "IT", "lon": 9.19,  "lat": 45.46, "price": 120000,  "capacity": 8,  "unlock_level": 2},
+	{"id": "genova",     "city": "Genova",      "country": "IT", "lon": 8.93,  "lat": 44.41, "price": 110000,  "capacity": 6,  "unlock_level": 2},
+	{"id": "lione",      "city": "Lione",       "country": "FR", "lon": 4.83,  "lat": 45.76, "price": 140000,  "capacity": 8,  "unlock_level": 3},
+	{"id": "marsiglia",  "city": "Marsiglia",   "country": "FR", "lon": 5.37,  "lat": 43.30, "price": 130000,  "capacity": 8,  "unlock_level": 3},
+	{"id": "firenze",    "city": "Firenze",     "country": "IT", "lon": 11.25, "lat": 43.77, "price": 125000,  "capacity": 6,  "unlock_level": 3},
+	{"id": "venezia",    "city": "Venezia",     "country": "IT", "lon": 12.34, "lat": 45.44, "price": 115000,  "capacity": 6,  "unlock_level": 3},
+	{"id": "bologna",    "city": "Bologna",     "country": "IT", "lon": 11.34, "lat": 44.49, "price": 115000,  "capacity": 6,  "unlock_level": 3},
+	{"id": "nizza",      "city": "Nizza",       "country": "FR", "lon": 7.26,  "lat": 43.70, "price": 135000,  "capacity": 6,  "unlock_level": 4},
+	{"id": "monaco_di_b","city": "Monaco",      "country": "DE", "lon": 11.58, "lat": 48.14, "price": 170000,  "capacity": 10, "unlock_level": 4},
+	{"id": "lubiana",    "city": "Lubiana",     "country": "SI", "lon": 14.51, "lat": 46.06, "price": 100000,  "capacity": 6,  "unlock_level": 4},
+	{"id": "innsbruck",  "city": "Innsbruck",   "country": "AT", "lon": 11.39, "lat": 47.26, "price": 120000,  "capacity": 6,  "unlock_level": 4},
+	{"id": "zurigo",     "city": "Zurigo",      "country": "CH", "lon": 8.54,  "lat": 47.38, "price": 200000,  "capacity": 8,  "unlock_level": 5},
+	{"id": "berna",      "city": "Berna",       "country": "CH", "lon": 7.45,  "lat": 46.95, "price": 180000,  "capacity": 6,  "unlock_level": 5},
+	{"id": "stoccarda",  "city": "Stoccarda",   "country": "DE", "lon": 9.18,  "lat": 48.78, "price": 155000,  "capacity": 8,  "unlock_level": 5},
+	{"id": "roma",       "city": "Roma",        "country": "IT", "lon": 12.50, "lat": 41.90, "price": 150000,  "capacity": 10, "unlock_level": 5},
+	{"id": "barcellona", "city": "Barcellona",  "country": "ES", "lon": 2.17,  "lat": 41.39, "price": 160000,  "capacity": 8,  "unlock_level": 6},
+	{"id": "napoli",     "city": "Napoli",      "country": "IT", "lon": 14.25, "lat": 40.85, "price": 120000,  "capacity": 8,  "unlock_level": 6},
+	{"id": "vienna",     "city": "Vienna",      "country": "AT", "lon": 16.37, "lat": 48.21, "price": 180000,  "capacity": 10, "unlock_level": 7},
+	{"id": "parigi",     "city": "Parigi",      "country": "FR", "lon": 2.35,  "lat": 48.86, "price": 250000,  "capacity": 12, "unlock_level": 8},
+]
+
+# ── Catalogo veicoli ──
 var vehicle_catalog: Array = [
-	{
-		"id": "van_basic",
-		"name": "Porter 100",
-		"type": "Furgone",
-		"fuel": "Diesel",
-		"price": 34000,
-		"payload_kg": 1000,
-		"capacity_m3": 8,
-		"fuel_consumption": 12.0,
-		"speed_kmh": 110,
-		"icon": "🚐",
-		"unlock_level": 1
-	},
-	{
-		"id": "van_medium",
-		"name": "Volaro 200",
-		"type": "Furgone",
-		"fuel": "Diesel",
-		"price": 45000,
-		"payload_kg": 1500,
-		"capacity_m3": 12,
-		"fuel_consumption": 14.0,
-		"speed_kmh": 100,
-		"icon": "🚐",
-		"unlock_level": 2
-	},
-	{
-		"id": "rigid_basic",
-		"name": "Creator 350",
-		"type": "Camion Rigido",
-		"fuel": "Diesel",
-		"price": 85000,
-		"payload_kg": 5000,
-		"capacity_m3": 30,
-		"fuel_consumption": 22.0,
-		"speed_kmh": 90,
-		"icon": "🚚",
-		"unlock_level": 4
-	},
-	{
-		"id": "tractor_basic",
-		"name": "T-Way 500",
-		"type": "Trattore",
-		"fuel": "Diesel",
-		"price": 120000,
-		"payload_kg": 15000,
-		"capacity_m3": 80,
-		"fuel_consumption": 32.0,
-		"speed_kmh": 85,
-		"icon": "🚛",
-		"unlock_level": 6
-	},
-	{
-		"id": "van_electric",
-		"name": "ePorter 100",
-		"type": "Furgone",
-		"fuel": "Elettrico",
-		"price": 48000,
-		"payload_kg": 900,
-		"capacity_m3": 7,
-		"fuel_consumption": 25.0,
-		"speed_kmh": 105,
-		"icon": "⚡🚐",
-		"unlock_level": 3
-	},
+	{"id": "van_basic",    "name": "Porter 100",  "type": "Furgone",       "fuel": "Diesel",    "price": 34000,  "payload_kg": 1000,  "capacity_m3": 8,  "fuel_consumption": 12.0, "speed_kmh": 110, "unlock_level": 1},
+	{"id": "van_medium",   "name": "Volaro 200",  "type": "Furgone",       "fuel": "Diesel",    "price": 45000,  "payload_kg": 1500,  "capacity_m3": 12, "fuel_consumption": 14.0, "speed_kmh": 100, "unlock_level": 2},
+	{"id": "van_electric", "name": "ePorter 100", "type": "Furgone",       "fuel": "Elettrico", "price": 48000,  "payload_kg": 900,   "capacity_m3": 7,  "fuel_consumption": 25.0, "speed_kmh": 105, "unlock_level": 3},
+	{"id": "rigid_basic",  "name": "Creator 350", "type": "Camion Rigido", "fuel": "Diesel",    "price": 85000,  "payload_kg": 5000,  "capacity_m3": 30, "fuel_consumption": 22.0, "speed_kmh": 90,  "unlock_level": 4},
+	{"id": "rigid_large",  "name": "Creator 500", "type": "Camion Rigido", "fuel": "Diesel",    "price": 110000, "payload_kg": 8000,  "capacity_m3": 45, "fuel_consumption": 26.0, "speed_kmh": 85,  "unlock_level": 5},
+	{"id": "tractor_basic","name": "T-Way 500",   "type": "Trattore",      "fuel": "Diesel",    "price": 120000, "payload_kg": 15000, "capacity_m3": 80, "fuel_consumption": 32.0, "speed_kmh": 85,  "unlock_level": 6},
 ]
 
-
-# CITTÀ E DISTANZE
-var cities: Array = [
-	{"name": "Torino", "country": "IT", "x": 550, "y": 350},
-	{"name": "Milano", "country": "IT", "x": 580, "y": 320},
-	{"name": "Roma", "country": "IT", "x": 620, "y": 480},
-	{"name": "Lione", "country": "FR", "x": 440, "y": 310},
-	{"name": "Barcellona", "country": "ES", "x": 320, "y": 480},
-	{"name": "Monaco", "country": "DE", "x": 620, "y": 230},
-	{"name": "Vienna", "country": "AT", "x": 730, "y": 230},
-	{"name": "Lubiana", "country": "SI", "x": 710, "y": 300},
-	{"name": "Marsiglia", "country": "FR", "x": 430, "y": 410},
-	{"name": "Zurigo", "country": "CH", "x": 530, "y": 260},
-]
-
-
-# CONTRATTI ATTIVI E CONSEGNE
+# ── Contratti e consegne ──
 var available_contracts: Array = []
 var active_deliveries: Array = []
+var active_transfers: Array = []
 
-
-# SEGNALI (events)
+# ── Segnali ──
 signal cash_changed(new_amount)
 signal vehicle_purchased(vehicle)
 signal delivery_completed(delivery)
+signal transfer_completed(transfer)
 signal ceo_level_up(new_level)
 signal contract_accepted(contract)
+signal terminal_purchased(terminal)
 
-
-# FUNZIONI
 func _ready():
-	generate_contracts()
+	if owned_terminals.size() == 0:
+		owned_terminals.append("torino")
+	if not load_game():
+		generate_contracts()
+
+# ══════════ CASH ══════════
 
 func add_cash(amount: int):
 	cash += amount
@@ -129,150 +83,248 @@ func remove_cash(amount: int) -> bool:
 		return true
 	return false
 
-func buy_vehicle(catalog_index: int) -> bool:
-	var model = vehicle_catalog[catalog_index]
-	if cash < model.price:
-		return false
-	if owned_vehicles.size() >= max_vehicles:
-		return false
-	if model.unlock_level > ceo_level:
-		return false
+# ══════════ TERMINALI ══════════
 
-	remove_cash(model.price)
+func get_terminal(tid: String) -> Dictionary:
+	for t in terminal_catalog:
+		if t.id == tid:
+			return t
+	return {}
 
-	var vehicle = model.duplicate()
-	vehicle["reg"] = generate_registration()
-	vehicle["odometer_km"] = 0
-	vehicle["wear"] = 0.0
-	vehicle["status"] = "parked"  # parked, in_transit, maintenance
-	vehicle["purchased_at"] = Time.get_datetime_string_from_system()
+func get_owned_terminal_list() -> Array:
+	var r = []
+	for tid in owned_terminals:
+		var d = get_terminal(tid)
+		if d.size() > 0:
+			r.append(d)
+	return r
 
-	owned_vehicles.append(vehicle)
-	vehicle_purchased.emit(vehicle)
-	add_ceo_xp(50)  # XP per acquisto
+func vehicles_at(tid: String) -> Array:
+	var r = []
+	for v in owned_vehicles:
+		if v.get("terminal_id", "") == tid and v.status == "parked":
+			r.append(v)
+	return r
+
+func count_at(tid: String) -> int:
+	var c = 0
+	for v in owned_vehicles:
+		if v.get("terminal_id", "") == tid:
+			c += 1
+	return c
+
+func capacity_of(tid: String) -> int:
+	return get_terminal(tid).get("capacity", 0)
+
+func buy_terminal(tid: String) -> bool:
+	if tid in owned_terminals:
+		return false
+	var d = get_terminal(tid)
+	if d.size() == 0 or d.unlock_level > ceo_level or cash < d.price:
+		return false
+	remove_cash(d.price)
+	owned_terminals.append(tid)
+	terminal_purchased.emit(d)
+	add_ceo_xp(100)
+	generate_contracts()
 	return true
 
-func generate_registration() -> String:
-	var letters = "ABCDEFGHJKLMNPQRSTUVWXYZ"
-	var reg = ""
-	for i in range(3):
-		reg += letters[randi() % letters.length()]
-	reg += str(randi() % 10) + str(randi() % 10) + str(randi() % 10) + str(randi() % 10)
-	return reg
+# ══════════ DISTANZE ══════════
+
+func dist_between(tid_a: String, tid_b: String) -> int:
+	var a = get_terminal(tid_a)
+	var b = get_terminal(tid_b)
+	if a.size() == 0 or b.size() == 0:
+		return 99999
+	return haversine(a.lat, a.lon, b.lat, b.lon)
+
+func haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> int:
+	var R = 6371.0
+	var dlat = deg_to_rad(lat2 - lat1)
+	var dlon = deg_to_rad(lon2 - lon1)
+	var a = sin(dlat / 2) * sin(dlat / 2) + cos(deg_to_rad(lat1)) * cos(deg_to_rad(lat2)) * sin(dlon / 2) * sin(dlon / 2)
+	var c = 2.0 * atan2(sqrt(a), sqrt(1.0 - a))
+	return int(R * c * 1.3)
+
+func reachable_terminals(tid: String) -> Array:
+	var r = []
+	for other in owned_terminals:
+		if other == tid:
+			continue
+		var d = dist_between(tid, other)
+		if d <= MAX_DELIVERY_DISTANCE_KM:
+			r.append({"id": other, "distance_km": d})
+	return r
+
+# ══════════ VEICOLI ══════════
+
+func buy_vehicle(cat_idx: int, tid: String) -> bool:
+	var m = vehicle_catalog[cat_idx]
+	if cash < m.price or owned_vehicles.size() >= max_vehicles:
+		return false
+	if m.unlock_level > ceo_level or tid not in owned_terminals:
+		return false
+	if count_at(tid) >= capacity_of(tid):
+		return false
+	remove_cash(m.price)
+	var v = m.duplicate()
+	v["reg"] = _reg()
+	v["odometer_km"] = 0
+	v["wear"] = 0.0
+	v["status"] = "parked"
+	v["terminal_id"] = tid
+	owned_vehicles.append(v)
+	vehicle_purchased.emit(v)
+	add_ceo_xp(50)
+	return true
+
+func _reg() -> String:
+	var L = "ABCDEFGHJKLMNPRSTUVWXYZ"
+	var r = ""
+	for i in 3:
+		r += L[randi() % L.length()]
+	for i in 4:
+		r += str(randi() % 10)
+	return r
 
 func get_available_vehicles() -> Array:
-	var available = []
+	var r = []
 	for v in owned_vehicles:
 		if v.status == "parked":
-			available.append(v)
-	return available
+			r.append(v)
+	return r
 
+# ══════════ TRASFERIMENTI ══════════
 
-# CONTRATTI
-func generate_contracts():
-	available_contracts.clear()
-	for i in range(5):
-		var origin = cities[randi() % cities.size()]
-		var destination = cities[randi() % cities.size()]
-		while destination.name == origin.name:
-			destination = cities[randi() % cities.size()]
-
-		var distance = calculate_distance(origin, destination)
-		var weight = (randi() % 3000) + 500
-		var pay_per_km = randf_range(1.5, 3.0)
-		var payout = int(distance * pay_per_km + weight * 0.5)
-
-		var contract = {
-			"id": "contract_" + str(i) + "_" + str(randi()),
-			"origin": origin.name,
-			"origin_country": origin.country,
-			"destination": destination.name,
-			"dest_country": destination.country,
-			"distance_km": distance,
-			"weight_kg": weight,
-			"payout": payout,
-			"cargo_type": ["Secco", "Secco", "Secco", "Refrigerato"][randi() % 4],
-			"time_hours": distance / 70.0,  # ~70 km/h media
-			"status": "available"
-		}
-		available_contracts.append(contract)
-
-func calculate_distance(city_a: Dictionary, city_b: Dictionary) -> int:
-	var dx = city_a.x - city_b.x
-	var dy = city_a.y - city_b.y
-	# Scala: 1 pixel ≈ 3 km (approssimativo per la mappa europea)
-	return int(sqrt(dx * dx + dy * dy) * 3)
-
-func accept_contract(contract_index: int, vehicle_index: int) -> bool:
-	if contract_index >= available_contracts.size():
+func start_transfer(veh_idx: int, dest_tid: String) -> bool:
+	if veh_idx >= owned_vehicles.size():
 		return false
-	if vehicle_index >= owned_vehicles.size():
+	var v = owned_vehicles[veh_idx]
+	if v.status != "parked" or dest_tid not in owned_terminals or v.terminal_id == dest_tid:
 		return false
-
-	var contract = available_contracts[contract_index]
-	var vehicle = owned_vehicles[vehicle_index]
-
-	if vehicle.status != "parked":
-		return false
-
-	# Crea la consegna
-	var delivery = {
-		"contract": contract,
-		"vehicle": vehicle,
-		"time_total": contract.time_hours * 60.0,  # converti in secondi di gioco
-		"time_remaining": contract.time_hours * 60.0,
-		"fuel_cost": int(contract.distance_km * vehicle.fuel_consumption / 100.0 * 1.4),
-		"started_at": Time.get_ticks_msec() / 1000.0
+	var d = dist_between(v.terminal_id, dest_tid)
+	var secs = d / 70.0 * 60.0
+	var tr = {
+		"vehicle": v,
+		"from_terminal": v.terminal_id,
+		"to_terminal": dest_tid,
+		"distance_km": d,
+		"time_total": secs,
+		"time_remaining": secs,
 	}
-
-	vehicle.status = "in_transit"
-	contract.status = "in_progress"
-	active_deliveries.append(delivery)
-	available_contracts.remove_at(contract_index)
-	contract_accepted.emit(contract)
+	v.status = "in_transit"
+	active_transfers.append(tr)
 	return true
 
+# ══════════ CONTRATTI ══════════
+
+func generate_contracts():
+	available_contracts.clear()
+	var pairs = []
+	for i in range(owned_terminals.size()):
+		for j in range(i + 1, owned_terminals.size()):
+			var d = dist_between(owned_terminals[i], owned_terminals[j])
+			if d <= MAX_DELIVERY_DISTANCE_KM:
+				pairs.append([owned_terminals[i], owned_terminals[j], d])
+	if pairs.size() == 0:
+		for i in 3:
+			var tid = owned_terminals[randi() % owned_terminals.size()]
+			var td = get_terminal(tid)
+			available_contracts.append({
+				"id": "loc_" + str(randi()),
+				"origin_terminal": tid, "origin": td.city,
+				"dest_terminal": tid, "destination": td.city + " (locale)",
+				"distance_km": (randi() % 50) + 20,
+				"weight_kg": (randi() % 2000) + 500,
+				"payout": (randi() % 3000) + 1500,
+				"cargo_type": ["Secco", "Refrigerato"][randi() % 2],
+				"time_hours": 0.5 + randf() * 1.0,
+			})
+		return
+	var n = mini(pairs.size() * 2 + 2, 8)
+	for i in range(n):
+		var p = pairs[randi() % pairs.size()]
+		var from_id = p[0] if randi() % 2 == 0 else p[1]
+		var to_id = p[1] if from_id == p[0] else p[0]
+		var fd = get_terminal(from_id)
+		var td = get_terminal(to_id)
+		var w = (randi() % 4000) + 500
+		var pay = int(p[2] * randf_range(1.8, 3.5) + w * 0.3)
+		available_contracts.append({
+			"id": "c_" + str(i) + "_" + str(randi()),
+			"origin_terminal": from_id, "origin": fd.city,
+			"dest_terminal": to_id, "destination": td.city,
+			"distance_km": p[2], "weight_kg": w, "payout": pay,
+			"cargo_type": ["Secco", "Secco", "Refrigerato"][randi() % 3],
+			"time_hours": p[2] / 70.0,
+		})
+
+func accept_contract(ci: int, vi: int) -> bool:
+	if ci >= available_contracts.size() or vi >= owned_vehicles.size():
+		return false
+	var c = available_contracts[ci]
+	var v = owned_vehicles[vi]
+	if v.status != "parked" or v.terminal_id != c.origin_terminal:
+		return false
+	var fc = int(c.distance_km * v.fuel_consumption / 100.0 * 1.4)
+	var dl = {
+		"contract": c, "vehicle": v,
+		"time_total": c.time_hours * 60.0,
+		"time_remaining": c.time_hours * 60.0,
+		"fuel_cost": fc,
+	}
+	v.status = "in_transit"
+	active_deliveries.append(dl)
+	available_contracts.remove_at(ci)
+	contract_accepted.emit(c)
+	return true
+
+# ══════════ PROCESS ══════════
+
 func _process(delta):
-	# Aggiorna consegne attive
-	var completed = []
+	var done_d = []
 	for i in range(active_deliveries.size()):
-		var d = active_deliveries[i]
-		d.time_remaining -= delta
-		if d.time_remaining <= 0:
-			completed.append(i)
-
-	# Completa le consegne (in ordine inverso per non sballare gli indici)
-	completed.reverse()
-	for i in completed:
-		complete_delivery(i)
-
-	# Rigenera contratti se ce ne sono pochi
+		active_deliveries[i].time_remaining -= delta
+		if active_deliveries[i].time_remaining <= 0:
+			done_d.append(i)
+	done_d.reverse()
+	for i in done_d:
+		_finish_delivery(i)
+	var done_t = []
+	for i in range(active_transfers.size()):
+		active_transfers[i].time_remaining -= delta
+		if active_transfers[i].time_remaining <= 0:
+			done_t.append(i)
+	done_t.reverse()
+	for i in done_t:
+		_finish_transfer(i)
 	if available_contracts.size() < 3:
 		generate_contracts()
 
-func complete_delivery(index: int):
-	var delivery = active_deliveries[index]
-	var payout = delivery.contract.payout
-	var fuel_cost = delivery.fuel_cost
+func _finish_delivery(i: int):
+	var d = active_deliveries[i]
+	add_cash(d.contract.payout - d.fuel_cost)
+	d.vehicle.status = "parked"
+	d.vehicle.terminal_id = d.contract.dest_terminal
+	d.vehicle.odometer_km += d.contract.distance_km
+	d.vehicle.wear += randf_range(0.5, 2.0)
+	add_ceo_xp(int(d.contract.payout / 100))
+	delivery_completed.emit(d)
+	active_deliveries.remove_at(i)
 
-	# Guadagno netto
-	add_cash(payout - fuel_cost)
+func _finish_transfer(i: int):
+	var t = active_transfers[i]
+	t.vehicle.status = "parked"
+	t.vehicle.terminal_id = t.to_terminal
+	t.vehicle.odometer_km += t.distance_km
+	t.vehicle.wear += randf_range(0.2, 0.8)
+	transfer_completed.emit(t)
+	active_transfers.remove_at(i)
 
-	# Aggiorna veicolo
-	delivery.vehicle.status = "parked"
-	delivery.vehicle.odometer_km += delivery.contract.distance_km
-	delivery.vehicle.wear += randf_range(0.5, 2.0)
+# ══════════ CEO XP ══════════
 
-	# XP
-	add_ceo_xp(int(payout / 100))
-
-	delivery_completed.emit(delivery)
-	active_deliveries.remove_at(index)
-
-
-# PROGRESSIONE CEO
-func xp_for_level(level: int) -> int:
-	return int(500 * pow(1.5, level - 1))
+func xp_for_level(lv: int) -> int:
+	return int(500 * pow(1.5, lv - 1))
 
 func add_ceo_xp(amount: int):
 	ceo_xp += amount
@@ -282,34 +334,30 @@ func add_ceo_xp(amount: int):
 		max_vehicles = 5 + ceo_level * 2
 		ceo_level_up.emit(ceo_level)
 
+# ══════════ SAVE/LOAD ══════════
 
-# SALVATAGGIO (per dopo)
 func save_game():
-	var save_data = {
-		"company_name": company_name,
-		"cash": cash,
-		"ceo_level": ceo_level,
-		"ceo_xp": ceo_xp,
-		"reputation": reputation,
-		"owned_vehicles": owned_vehicles,
-		"max_vehicles": max_vehicles,
-	}
-	var file = FileAccess.open("user://savegame.json", FileAccess.WRITE)
-	file.store_string(JSON.stringify(save_data))
+	var d = {"company_name": company_name, "cash": cash, "ceo_level": ceo_level,
+		"ceo_xp": ceo_xp, "reputation": reputation, "owned_vehicles": owned_vehicles,
+		"max_vehicles": max_vehicles, "owned_terminals": owned_terminals}
+	var f = FileAccess.open("user://savegame.json", FileAccess.WRITE)
+	f.store_string(JSON.stringify(d))
 
 func load_game() -> bool:
 	if not FileAccess.file_exists("user://savegame.json"):
 		return false
-	var file = FileAccess.open("user://savegame.json", FileAccess.READ)
-	var json = JSON.new()
-	if json.parse(file.get_as_text()) != OK:
+	var f = FileAccess.open("user://savegame.json", FileAccess.READ)
+	var j = JSON.new()
+	if j.parse(f.get_as_text()) != OK:
 		return false
-	var data = json.data
-	company_name = data.get("company_name", "TransLogic")
-	cash = data.get("cash", 500000)
-	ceo_level = data.get("ceo_level", 1)
-	ceo_xp = data.get("ceo_xp", 0)
-	reputation = data.get("reputation", 50.0)
-	owned_vehicles = data.get("owned_vehicles", [])
-	max_vehicles = data.get("max_vehicles", 5)
+	var d = j.data
+	company_name = d.get("company_name", "TransLogic")
+	cash = d.get("cash", 500000)
+	ceo_level = d.get("ceo_level", 1)
+	ceo_xp = d.get("ceo_xp", 0)
+	reputation = d.get("reputation", 50.0)
+	owned_vehicles = d.get("owned_vehicles", [])
+	max_vehicles = d.get("max_vehicles", 5)
+	owned_terminals = d.get("owned_terminals", ["torino"])
+	generate_contracts()
 	return true

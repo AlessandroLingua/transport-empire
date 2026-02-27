@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://2sm2bgnir3h1"]
 
-[ext_resource type="Script" path="res://scripts/garage_screen.gd" id="1_ta6n3"]
+[ext_resource type="Script" uid="uid://m564ods7j7ub" path="res://scripts/garage_screen.gd" id="1_ta6n3"]
 
 [node name="GarageScreen" type="Control" unique_id=664239977]
 layout_mode = 3
