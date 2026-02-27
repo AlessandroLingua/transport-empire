@@ -21,9 +21,7 @@ func setup_ui():
 	vbox.add_theme_constant_override("separation", 12)
 	scroll.add_child(vbox)
 	
-	# ══════════════════════════════
 	# MAPPA
-	# ══════════════════════════════
 	map_widget = MapWidget.new()
 	map_widget.custom_minimum_size = Vector2(0, 420)
 	vbox.add_child(map_widget)
@@ -46,9 +44,7 @@ func setup_ui():
 	sep.add_theme_color_override("separator", Color("#30363d"))
 	vbox.add_child(sep)
 	
-	# ══════════════════════════════
 	# CONSEGNE ATTIVE
-	# ══════════════════════════════
 	deliveries_container = VBoxContainer.new()
 	deliveries_container.add_theme_constant_override("separation", 8)
 	vbox.add_child(deliveries_container)
@@ -57,9 +53,7 @@ func setup_ui():
 	sep2.add_theme_color_override("separator", Color("#30363d"))
 	vbox.add_child(sep2)
 	
-	# ══════════════════════════════
 	# CONTRATTI
-	# ══════════════════════════════
 	contracts_container = VBoxContainer.new()
 	contracts_container.add_theme_constant_override("separation", 8)
 	vbox.add_child(contracts_container)
@@ -92,10 +86,8 @@ func _create_status_badge(text: String, color: String) -> PanelContainer:
 	panel.add_child(label)
 	return panel
 
-# ══════════════════════════════════════
-# CONSEGNE ATTIVE
-# ══════════════════════════════════════
 
+# CONSEGNE ATTIVE
 func _update_deliveries():
 	for child in deliveries_container.get_children():
 		child.queue_free()
@@ -185,10 +177,8 @@ func _create_delivery_card(delivery: Dictionary) -> PanelContainer:
 	
 	return panel
 
-# ══════════════════════════════════════
-# CONTRATTI
-# ══════════════════════════════════════
 
+# CONTRATTI
 func _update_contracts():
 	for child in contracts_container.get_children():
 		child.queue_free()
@@ -294,9 +284,7 @@ func _on_contract_accepted(_contract):
 	_update_contracts()
 
 
-# ══════════════════════════════════════════════════════════════
 # CLASSE MAPPA - Disegna la mappa europea con camion animati
-# ══════════════════════════════════════════════════════════════
 class MapWidget extends Control:
 	
 	# Coordinate città normalizzate (0-1) sulla mappa

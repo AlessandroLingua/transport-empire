@@ -1,9 +1,7 @@
 # res://scripts/game_manager.gd
 extends Node
 
-# ══════════════════════════════════════
 # DATI AZIENDA
-# ══════════════════════════════════════
 var company_name: String = "TransLogic"
 var company_city: String = "Turin"
 var company_country: String = "IT"
@@ -12,15 +10,13 @@ var ceo_level: int = 1
 var ceo_xp: int = 0
 var reputation: float = 50.0
 
-# ══════════════════════════════════════
+
 # FLOTTA
-# ══════════════════════════════════════
 var owned_vehicles: Array = []
 var max_vehicles: int = 5
 
-# ══════════════════════════════════════
+
 # CATALOGO VEICOLI (dati di gioco)
-# ══════════════════════════════════════
 var vehicle_catalog: Array = [
 	{
 		"id": "van_basic",
@@ -89,9 +85,8 @@ var vehicle_catalog: Array = [
 	},
 ]
 
-# ══════════════════════════════════════
+
 # CITTÀ E DISTANZE
-# ══════════════════════════════════════
 var cities: Array = [
 	{"name": "Torino", "country": "IT", "x": 550, "y": 350},
 	{"name": "Milano", "country": "IT", "x": 580, "y": 320},
@@ -105,24 +100,21 @@ var cities: Array = [
 	{"name": "Zurigo", "country": "CH", "x": 530, "y": 260},
 ]
 
-# ══════════════════════════════════════
+
 # CONTRATTI ATTIVI E CONSEGNE
-# ══════════════════════════════════════
 var available_contracts: Array = []
 var active_deliveries: Array = []
 
-# ══════════════════════════════════════
+
 # SEGNALI (events)
-# ══════════════════════════════════════
 signal cash_changed(new_amount)
 signal vehicle_purchased(vehicle)
 signal delivery_completed(delivery)
 signal ceo_level_up(new_level)
 signal contract_accepted(contract)
 
-# ══════════════════════════════════════
+
 # FUNZIONI
-# ══════════════════════════════════════
 func _ready():
 	generate_contracts()
 
@@ -175,9 +167,8 @@ func get_available_vehicles() -> Array:
 			available.append(v)
 	return available
 
-# ══════════════════════════════════════
+
 # CONTRATTI
-# ══════════════════════════════════════
 func generate_contracts():
 	available_contracts.clear()
 	for i in range(5):
@@ -278,9 +269,8 @@ func complete_delivery(index: int):
 	delivery_completed.emit(delivery)
 	active_deliveries.remove_at(index)
 
-# ══════════════════════════════════════
+
 # PROGRESSIONE CEO
-# ══════════════════════════════════════
 func xp_for_level(level: int) -> int:
 	return int(500 * pow(1.5, level - 1))
 
@@ -292,9 +282,8 @@ func add_ceo_xp(amount: int):
 		max_vehicles = 5 + ceo_level * 2
 		ceo_level_up.emit(ceo_level)
 
-# ══════════════════════════════════════
+
 # SALVATAGGIO (per dopo)
-# ══════════════════════════════════════
 func save_game():
 	var save_data = {
 		"company_name": company_name,
