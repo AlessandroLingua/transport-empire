@@ -127,6 +127,7 @@ func buy_terminal(tid: String) -> bool:
 	terminal_purchased.emit(d)
 	add_ceo_xp(100)
 	generate_contracts()
+	save_game()
 	return true
 
 # ══════════ DISTANZE ══════════
@@ -176,6 +177,7 @@ func buy_vehicle(cat_idx: int, tid: String) -> bool:
 	owned_vehicles.append(v)
 	vehicle_purchased.emit(v)
 	add_ceo_xp(50)
+	save_game()
 	return true
 
 func _reg() -> String:
@@ -277,6 +279,7 @@ func accept_contract(ci: int, vi: int) -> bool:
 	active_deliveries.append(dl)
 	available_contracts.remove_at(ci)
 	contract_accepted.emit(c)
+	save_game()
 	return true
 
 # ══════════ PROCESS ══════════
@@ -311,6 +314,7 @@ func _finish_delivery(i: int):
 	add_ceo_xp(int(d.contract.payout / 100))
 	delivery_completed.emit(d)
 	active_deliveries.remove_at(i)
+	save_game()
 
 func _finish_transfer(i: int):
 	var t = active_transfers[i]
@@ -320,6 +324,7 @@ func _finish_transfer(i: int):
 	t.vehicle.wear += randf_range(0.2, 0.8)
 	transfer_completed.emit(t)
 	active_transfers.remove_at(i)
+	save_game()
 
 # ══════════ CEO XP ══════════
 
